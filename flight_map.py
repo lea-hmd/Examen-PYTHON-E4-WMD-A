@@ -1,7 +1,7 @@
 import csv
 from airport import Airport
 from flight import Flight
-
+from flight_path import FlightPath
 
 class FlightMap:
     def __init__(self):
@@ -43,7 +43,7 @@ class FlightMap:
         """
         for airport in self.airports_list:
             print(airport)
-            
+
         return self.airports_list
 
     def flights(self) -> list[Flight]:
@@ -55,7 +55,7 @@ class FlightMap:
         """
         for flight in self.flights_list:
             print(flight)
-            
+
         return self.flights_list
 
     def airport_find(self, airport_code: str) -> Airport:
@@ -122,3 +122,32 @@ class FlightMap:
                 if airport not in airports_from_list:
                     airports_from_list.append(airport)
         return airports_from_list
+
+    def paths(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
+        airports_not_visited = self.airports_list
+        airports_future = [src_airport_code]
+        airports_visited = []
+        
+        paths = []
+
+        while airports_not_visited:
+            current_airports = airports_future
+            airports_future = []
+
+            for airport in current_airports:
+                if airport in airports_visited:
+                    continue
+
+                if airport == dst_airport_code:
+                    path = FlightPath(src_airport_code, dst_airport_code, self.flights_list)
+                    paths.append(path)
+                    continue
+
+                for flight in self.flights_list:
+                    if flight[0] == airport:
+                        airports_future.append(flight[1])
+
+                airports_not_visited.remove(airport)
+                airports_visited.append(airport)
+
+        return paths
