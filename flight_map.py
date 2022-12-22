@@ -17,7 +17,6 @@ class FlightMap:
          """
         with open(csv_file, 'r', encoding="utf-8") as f:
             reader = csv.reader(f)
-            next(reader)
             for row in reader:
                 airport = Airport(*row)
                 self.airports_list.append(airport)
@@ -31,7 +30,6 @@ class FlightMap:
         """
         with open(csv_file, 'r', encoding="utf-8") as f:
             reader = csv.reader(f)
-            next(reader)
             for row in reader:
                 flight = Flight(*row)
                 self.flights_list.append(flight)
