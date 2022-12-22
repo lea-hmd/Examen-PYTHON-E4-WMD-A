@@ -1,5 +1,5 @@
 class Flight:
-    def __init__(self, src_code: str, dst_code: str, duration: float):
+    def __init__(self, src_code: str = None, dst_code: str = None, duration: float = None):
         """
         Flight class characterized by the following attributes:
 
@@ -11,3 +11,6 @@ class Flight:
         self.src_code = src_code
         self.dst_code = dst_code
         self.duration = duration
+
+    def __str__(self) -> str:
+        return f"Source : {self.src_code}, Destination : {self.dst_code}, Durée : {self.duration}"

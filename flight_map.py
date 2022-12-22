@@ -15,8 +15,8 @@ class FlightMap:
          Args:
              csv_file (str): A csv file containing a list of airports
          """
-        with open(csv_file, 'r', encoding="utf-8") as f:
-            reader = csv.reader(f)
+        with open(csv_file, 'r', encoding="utf-8") as airports_file:
+            reader = csv.reader(airports_file, escapechar='"')
             for row in reader:
                 airport = Airport(*row)
                 self.airports_list.append(airport)
@@ -28,8 +28,8 @@ class FlightMap:
         Args:
             csv_file (str): A csv file containing a list of flights
         """
-        with open(csv_file, 'r', encoding="utf-8") as f:
-            reader = csv.reader(f)
+        with open(csv_file, 'r', encoding="utf-8") as flights_file:
+            reader = csv.reader(flights_file, escapechar='"')
             for row in reader:
                 flight = Flight(*row)
                 self.flights_list.append(flight)
@@ -41,7 +41,10 @@ class FlightMap:
         Returns:
             list[Airport]: A list of all airports
         """
-        return self.airports
+        for airport in self.airports_list:
+            print(airport)
+            
+        return self.airports_list
 
     def flights(self) -> list[Flight]:
         """
@@ -50,7 +53,10 @@ class FlightMap:
         Returns:
             list[Flight]: A list of all flights
         """
-        return self.flights
+        for flight in self.flights_list:
+            print(flight)
+            
+        return self.flights_list
 
     def airport_find(self, airport_code: str) -> Airport:
         """
@@ -62,9 +68,9 @@ class FlightMap:
         Returns:
             Airport: The airport found
         """
-        for airport in self.airports_list:
-            if airport.code == airport_code:
-                return airport
+        for a in self.airports_list:
+            if a.code == airport_code:
+                return a
         return None
 
     def flight_exist(self, src_airport_code: str, dst_airport_code: str) -> bool:
@@ -79,7 +85,7 @@ class FlightMap:
             bool: True if there is a direct flight between the departure airport and the destination one, False if not
         """
         for flight in self.flights_list:
-            if flight.src_airport_code == src_airport_code and flight.dst_airport_code == dst_airport_code:
+            if flight.src_code == src_airport_code and flight.dst_code == dst_airport_code:
                 return True
         return False
 
@@ -93,11 +99,11 @@ class FlightMap:
         Returns:
             list[Flight]: A list of flights matching the airport_code
         """
-        flights = []
+        flights_where_list = []
         for flight in self.flights_list:
-            if flight.src_airport_code == airport_code or flight.dst_airport_code == airport_code:
-                flights.append(flight)
-        return flights
+            if airport_code in (flight.src_code, flight.dst_code):
+                flights_where_list.append(flight)
+        return flights_where_list
 
     def airports_from(self, airport_code: str) -> list[Airport]:
         """
@@ -109,10 +115,10 @@ class FlightMap:
         Returns:
             list[Airport]: A list of airports destination
         """
-        airports = []
+        airports_from_list = []
         for flight in self.flights_list:
-            if flight.src_airport_code == airport_code:
-                airport = self.airport_find(flight.dst_airport_code)
-                if airport not in airports:
-                    airports.append(airport)
-        return airports
+            if flight.src_code == airport_code:
+                airport = self.airport_find(flight.dst_code)
+                if airport not in airports_from_list:
+                    airports_from_list.append(airport)
+        return airports_from_list
