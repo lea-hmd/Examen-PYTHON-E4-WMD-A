@@ -179,3 +179,28 @@ def paths(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath
             airports_future.add(next_airport)
 
     return paths_found
+
+
+def paths_shortest_length(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
+    """
+    Finds the shortest paths steps between the src_airport_code and dst_airport_code airports.
+
+    Args:
+        src_airport_code (str): Source airport code
+        dst_airport_code (str): Destination airport code
+
+    Returns:
+        list[FlightPath]: List of FlightPath
+    """
+
+    # On récupère tous les chemins possibles entre les deux aéroports
+    all_paths = self.paths(src_airport_code, dst_airport_code)
+
+    # On trie les chemins par nombre d'étapes en utilisant la fonction steps
+    all_paths.sort(key=lambda path: path.steps())
+
+    # On récupère le nombre d'étapes du premier chemin (celui avec le moins d'étapes)
+    shortest_length = all_paths[0].steps()
+
+    # On filtre la liste des chemins pour garder que ceux qui ont le même nombre d'étapes que le premier en utilisant une list comprehension
+    return [path for path in all_paths if path.steps() == shortest_length]
