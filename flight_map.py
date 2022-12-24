@@ -70,3 +70,15 @@ class FlightMap:
             print(flight)
             
         return list(self.flights_dict.values())
+
+    def airport_find(self, airport_code: str) -> Airport:
+        """
+        Finds the airport with the given code and returns the Airport object if it exists, and None otherwise.
+
+        Args:
+            airport_code (str): The code of the airport to find
+
+        Returns:
+            Airport: The Airport object if it exists, or None otherwise
+        """
+        return self.airports_dict.get(airport_code, None)
