@@ -1,13 +1,13 @@
 class Airport:
     def __init__(self, name: str = None, code: str = None, lat: float = None, long: float = None):
         """
-        Airport class characterized by the following attributes :
+        Airport class constructor representing an airport and characterized by the following optional attributes :
 
         Args:
-            name (str): The name of the airport
-            code (str): The code of the airport
-            lat (float): The latitude of the airport
-            long (float): The longitude of the airport
+            name (str): Airport name
+            code (str): Airport code
+            lat (float): Airport latitude
+            long (float): Airport longitude
         """
         self.name = name
         self.code = code
@@ -15,4 +15,10 @@ class Airport:
         self.long = long
 
     def __str__(self) -> str:
-        return f"{self.name} ({self.code}): {self.lat}, {self.long}"
+        """
+        Allowing to format the object as a string.
+
+        Returns:
+            str: Formatted object
+        """
+        return f"Nom : {self.name}\nCode : {self.code}\nLatitude : {self.lat}\nLongitude : {self.long}\n___________\n\n"
