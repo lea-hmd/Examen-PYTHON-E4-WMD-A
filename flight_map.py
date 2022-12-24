@@ -96,3 +96,20 @@ class FlightMap:
             bool: True if there is a direct flight, False otherwise
         """
         return (src_airport_code, dst_airport_code) in self.flights_dict
+
+    def flights_where(self, airport_code: str) -> list[Flight]:
+        """
+        Finds the direct flights that concern the airport with the given code and returns the list of flights.
+
+        Args:
+            airport_code (str): Airport code
+
+        Returns:
+            list[Flight]: The list of flights found
+        """
+        return [
+            Flight(self.airport_find(src_code),
+                   self.airport_find(dst_code), duration)
+            for (src_code, dst_code), duration in self.flights_dict.items()
+            if src_code == airport_code
+        ]
