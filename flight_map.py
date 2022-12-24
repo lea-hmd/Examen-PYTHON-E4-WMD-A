@@ -245,3 +245,22 @@ def paths_via(self, src_airport_code: str, dst_airport_code: str, via_airport_co
         for path_from_via in self.paths(via_airport_code, dst_airport_code):
             stopover_paths.append(path_to_via + path_from_via)
     return stopover_paths
+
+
+def paths_via_multi(self, src_airport_code: str, dst_airport_code: str, via_airports_codes: set[str]) -> list[FlightPath]:
+    """
+    Finds all the paths between the src_airport_code and dst_airport_code airports via the via_airports_codes airports.
+
+    Args:
+        src_airport_code (str): Source airport code
+        dst_airport_code (str): Destination airport code
+        via_airports_codes (set[str]): Via airports codes
+
+    Returns:
+        list[FlightPath]: List of FlightPath
+    """
+    # On chercher tous les chemins possibles allant de src_airport_code à dst_airport_code en utilisant la précédente fonction paths
+    all_paths = self.paths(src_airport_code, dst_airport_code)
+
+    # On garde uniquement ceux qui passent par tous les aéroports de via_airports_codes ensuite on vérifie que les aéroports de via_airports_codes sont tous présents dans la liste des aéroports du chemin pour chacun d'entre eux
+    return [path for path in all_paths if via_airports_codes.issubset(set(path.airports()))]
