@@ -82,3 +82,16 @@ class FlightMap:
             Airport: The Airport object if it exists, or None otherwise
         """
         return self.airports_dict.get(airport_code, None)
+
+    def flight_exist(self, src_airport_code: str, dst_airport_code: str) -> bool:
+        """
+        Returns True if there is a direct flight between the src_airport_code and dst_airport_code airports, and False otherwise.
+
+        Args:
+            src_airport_code (str): Source airport code
+            dst_airport_code (str): Destination airport code
+
+        Returns:
+            bool: True if there is a direct flight, False otherwise
+        """
+        return (src_airport_code, dst_airport_code) in self.flights_dict
