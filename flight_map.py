@@ -19,17 +19,22 @@ class FlightMap:
         Args:
             csv_file (str): A csv file containing a list of airports
         """
-        with open(csv_file, 'r', encoding="utf-8") as airports_data:
-            reader = csv.DictReader(airports_data, fieldnames=[
-                                    'name', 'code', 'lat', 'long'], delimiter=',', quotechar='"', skipinitialspace=True)
-            for row in reader:
-                if 'name' in row and 'code' in row and 'lat' in row and 'long' in row:
-                    name = row['name']
-                    code = row['code']
-                    lat = float(row['lat'])
-                    long = float(row['long'])
-                    airport = Airport(name, code, lat, long)
-                    self.airports_dict[code] = airport
+        try:
+            with open(csv_file, 'r', encoding="utf-8") as airports_data:
+                reader = csv.DictReader(airports_data, fieldnames=[
+                                        'name', 'code', 'lat', 'long'], delimiter=',', quotechar='"', skipinitialspace=True)
+                for row in reader:
+                    if 'name' in row and 'code' in row and 'lat' in row and 'long' in row:
+                        name = row['name']
+                        code = row['code']
+                        lat = float(row['lat'])
+                        long = float(row['long'])
+                        airport = Airport(name, code, lat, long)
+                        self.airports_dict[code] = airport
+        except FileNotFoundError:
+            print("Error: the airports csv file was not found at the specified path. Please check the file's path.")
+        except ValueError:
+            print("Error: the airports csv file is not correctly formatted")
 
     def import_flights(self, csv_file: str) -> None:
         """
@@ -38,16 +43,22 @@ class FlightMap:
         Args:
             csv_file (str): A csv file containing a list of flights
         """
-        with open(csv_file, 'r', encoding="utf-8") as flights_data:
-            reader = csv.DictReader(flights_data, fieldnames=[
-                                    'src_code', 'dst_code', 'duration'], delimiter=',', quotechar='"', skipinitialspace=True)
-            for row in reader:
-                if 'src_code' in row and 'dst_code' in row and 'duration' in row:
-                    src_code = row['src_code']
-                    dst_code = row['dst_code']
-                    duration = float(row['duration'])
-                    self.flights_dict[src_code, dst_code] = duration
-                    self.flights_dict[dst_code, src_code] = duration
+        try:
+            with open(csv_file, 'r', encoding="utf-8") as flights_data:
+                reader = csv.DictReader(flights_data, fieldnames=[
+                                        'src_code', 'dst_code', 'duration'], delimiter=',', quotechar='"', skipinitialspace=True)
+                for row in reader:
+                    if 'src_code' in row and 'dst_code' in row and 'duration' in row:
+                        src_code = row['src_code']
+                        dst_code = row['dst_code']
+                        duration = float(row['duration'])
+                        self.flights_dict[src_code, dst_code] = duration
+                        self.flights_dict[dst_code, src_code] = duration
+        except FileNotFoundError:
+            print(
+                "Error: the flights csv file was not found at the specified path. Please check the file's path.")
+        except ValueError:
+            print("Error: the flights csv file is not correctly formatted")
 
     def airports(self) -> list[Airport]:
         """
@@ -56,6 +67,8 @@ class FlightMap:
         Returns:
             list[Airport]: A list of airports
         """
+        if not self.airports_dict:
+            raise ValueError("Error: The airports dictonary is empty.")
         for airport in self.airports_dict.values():
             print(airport)
 
@@ -68,6 +81,8 @@ class FlightMap:
         Returns:
             list[Flight]: A list of flights
         """
+        if not self.airports_dict:
+            raise ValueError("Error: The flights dictonary is empty.")
         for flight in self.flights_dict.values():
             print(flight)
 
@@ -108,12 +123,15 @@ class FlightMap:
         Returns:
             list[Flight]: The list of flights found
         """
-        return [
-            Flight(self.airport_find(src_code),
-                   self.airport_find(dst_code), duration)
-            for (src_code, dst_code), duration in self.flights_dict.items()
-            if src_code == airport_code
-        ]
+        try:
+            return [
+                Flight(self.airport_find(src_code),
+                       self.airport_find(dst_code), duration)
+                for (src_code, dst_code), duration in self.flights_dict.items()
+                if src_code == airport_code
+            ]
+        except Exception as e:
+            raise e
 
     def airports_from(self, airport_code: str) -> list[Airport]:
         """
@@ -125,11 +143,14 @@ class FlightMap:
         Returns:
             List[Airport]: The list of destination airports
         """
-        return [
-            self.airport_find(dst_code)
-            for (src_code, dst_code), duration in self.flights_dict.items()
-            if src_code == airport_code
-        ]
+        try:
+            return [
+                self.airport_find(dst_code)
+                for (src_code, dst_code), duration in self.flights_dict.items()
+                if src_code == airport_code
+            ]
+        except Exception as e:
+            raise e
 
     def paths(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
         """
@@ -142,42 +163,45 @@ class FlightMap:
         Returns:
             list[FlightPath]: List of FlightPath
         """
-        # On cherche l'aéroport à l'aide de notre fonction airport_find
-        src_airport = self.airport_find(src_airport_code)
+        try:
+            # On cherche l'aéroport à l'aide de notre fonction airport_find
+            src_airport = self.airport_find(src_airport_code)
 
-        airports_not_visited = set(self.airports_dict.values())
-        airports_future = {src_airport}
-        airports_visited = set()
+            airports_not_visited = set(self.airports_dict.values())
+            airports_future = {src_airport}
+            airports_visited = set()
 
-        # Liste des chemins trouvés
-        paths_found = []
+            # Liste des chemins trouvés
+            paths_found = []
 
-        # Boucle itérant tant qu'il y a un prochain aéroport
-        while airports_future:
-            # On récupère le prochain aéroport à visiter
-            airport = airports_future.pop()
+            # Boucle itérant tant qu'il y a un prochain aéroport
+            while airports_future:
+                # On récupère le prochain aéroport à visiter
+                airport = airports_future.pop()
 
-            # On ajoute l'aéroport à la liste des aéroports visités
-            airports_visited.add(airport)
-            airports_not_visited.remove(airport)
+                # On ajoute l'aéroport à la liste des aéroports visités
+                airports_visited.add(airport)
+                airports_not_visited.remove(airport)
 
-            # Si l'aéroport est la dernière destination on ajoute le chemin à la liste des chemins trouvés sinon on continue
-            if airport.code == dst_airport_code:
-                paths_found.append(airport.path)
-                continue
-
-            # On récupère les aéroports accessibles à partir de l'aéroport actuel à l'aide de notre fonction airports_from
-            next_airports = self.airports_from(airport.code)
-            for next_airport in next_airports:
-                # Si l'aéroport a déjà été visité, on passe au suivant
-                if next_airport in airports_visited:
+                # Si l'aéroport est la dernière destination on ajoute le chemin à la liste des chemins trouvés sinon on continue
+                if airport.code == dst_airport_code:
+                    paths_found.append(airport.path)
                     continue
-                # Sinon on ajoute le vol à la prochaine destination en vérifiant qu'il existe bien à l'aide de notre fonction flight_exist et on ajoute l'aéroport aux aéroports à visiter
-                flight = self.flight_exist(airport.code, next_airport.code)
-                next_airport.path.add(next_airport, flight)
-                airports_future.add(next_airport)
 
-        return paths_found
+                # On récupère les aéroports accessibles à partir de l'aéroport actuel à l'aide de notre fonction airports_from
+                next_airports = self.airports_from(airport.code)
+                for next_airport in next_airports:
+                    # Si l'aéroport a déjà été visité, on passe au suivant
+                    if next_airport in airports_visited:
+                        continue
+                    # Sinon on ajoute le vol à la prochaine destination en vérifiant qu'il existe bien à l'aide de notre fonction flight_exist et on ajoute l'aéroport aux aéroports à visiter
+                    flight = self.flight_exist(airport.code, next_airport.code)
+                    next_airport.path.add(next_airport, flight)
+                    airports_future.add(next_airport)
+
+            return paths_found
+        except Exception as e:
+            raise e
 
     def paths_shortest_length(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
         """
@@ -190,18 +214,20 @@ class FlightMap:
         Returns:
             list[FlightPath]: List of FlightPath
         """
+        try:
+            # On récupère tous les chemins possibles entre les deux aéroports
+            all_paths = self.paths(src_airport_code, dst_airport_code)
 
-        # On récupère tous les chemins possibles entre les deux aéroports
-        all_paths = self.paths(src_airport_code, dst_airport_code)
+            # On trie les chemins par nombre d'étapes en utilisant la fonction steps
+            all_paths.sort(key=lambda path: path.steps())
 
-        # On trie les chemins par nombre d'étapes en utilisant la fonction steps
-        all_paths.sort(key=lambda path: path.steps())
+            # On récupère le nombre d'étapes du premier chemin (celui avec le moins d'étapes)
+            shortest_length = all_paths[0].steps()
 
-        # On récupère le nombre d'étapes du premier chemin (celui avec le moins d'étapes)
-        shortest_length = all_paths[0].steps()
-
-        # On filtre la liste des chemins pour garder que ceux qui ont le même nombre d'étapes que le premier en utilisant une list comprehension
-        return [path for path in all_paths if path.steps() == shortest_length]
+            # On filtre la liste des chemins pour garder que ceux qui ont le même nombre d'étapes que le premier en utilisant une list comprehension
+            return [path for path in all_paths if path.steps() == shortest_length]
+        except Exception as e:
+            raise e
 
     def paths_shortest_duration(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
         """
@@ -214,14 +240,17 @@ class FlightMap:
         Returns:
             list[FlightPath]: List of FlightPath
         """
+        try:
+            all_paths = self.paths(src_airport_code, dst_airport_code)
 
-        all_paths = self.paths(src_airport_code, dst_airport_code)
+            all_paths.sort(key=lambda path: path.duration())
 
-        all_paths.sort(key=lambda path: path.duration())
+            shortest_duration = all_paths[0].duration()
 
-        shortest_duration = all_paths[0].duration()
+            return [path for path in all_paths if path.duration() == shortest_duration]
 
-        return [path for path in all_paths if path.duration() == shortest_duration]
+        except Exception as e:
+            raise e
 
     def paths_via(self, src_airport_code: str, dst_airport_code: str, via_airport_code: str) -> list[FlightPath]:
         """
@@ -235,12 +264,15 @@ class FlightMap:
         Returns:
             list[FlightPath]: List of FlightPath
         """
-        stopover_paths = []
+        try:
+            stopover_paths = []
 
-        for path_to_via in self.paths(src_airport_code, via_airport_code):
-            for path_from_via in self.paths(via_airport_code, dst_airport_code):
-                stopover_paths.append(path_to_via + path_from_via)
-        return stopover_paths
+            for path_to_via in self.paths(src_airport_code, via_airport_code):
+                for path_from_via in self.paths(via_airport_code, dst_airport_code):
+                    stopover_paths.append(path_to_via + path_from_via)
+            return stopover_paths
+        except Exception as e:
+            raise e
 
     def paths_via_multi(self, src_airport_code: str, dst_airport_code: str, via_airports_codes: set[str]) -> list[FlightPath]:
         """
@@ -254,8 +286,12 @@ class FlightMap:
         Returns:
             list[FlightPath]: List of FlightPath
         """
-        # On chercher tous les chemins possibles allant de src_airport_code à dst_airport_code en utilisant la précédente fonction paths
-        all_paths = self.paths(src_airport_code, dst_airport_code)
+        try:
+            # On chercher tous les chemins possibles allant de src_airport_code à dst_airport_code en utilisant la précédente fonction paths
+            all_paths = self.paths(src_airport_code, dst_airport_code)
 
-        # On garde uniquement ceux qui passent par tous les aéroports de via_airports_codes ensuite on vérifie que les aéroports de via_airports_codes sont tous présents dans la liste des aéroports du chemin pour chacun d'entre eux
-        return [path for path in all_paths if via_airports_codes.issubset(set(path.airports()))]
+            # On garde uniquement ceux qui passent par tous les aéroports de via_airports_codes ensuite on vérifie que les aéroports de via_airports_codes sont tous présents dans la liste des aéroports du chemin pour chacun d'entre eux
+            return [path for path in all_paths if via_airports_codes.issubset(set(path.airports()))]
+
+        except Exception as e:
+            raise e
