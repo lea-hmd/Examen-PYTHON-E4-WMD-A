@@ -68,7 +68,7 @@ class FlightMap:
             list[Airport]: A list of airports
         """
         if not self.airports_dict:
-            raise ValueError("Error: The airports dictonary is empty.")
+            raise ValueError("Error: The airports dictionary is empty.")
         for airport in self.airports_dict.values():
             print(airport)
 
@@ -82,7 +82,7 @@ class FlightMap:
             list[Flight]: A list of flights
         """
         if not self.airports_dict:
-            raise ValueError("Error: The flights dictonary is empty.")
+            raise ValueError("Error: The flights dictionary is empty.")
         for flight in self.flights_dict.values():
             print(flight)
 
@@ -248,7 +248,6 @@ class FlightMap:
             shortest_duration = all_paths[0].duration()
 
             return [path for path in all_paths if path.duration() == shortest_duration]
-
         except Exception as e:
             raise e
 
@@ -292,6 +291,5 @@ class FlightMap:
 
             # On garde uniquement ceux qui passent par tous les aéroports de via_airports_codes ensuite on vérifie que les aéroports de via_airports_codes sont tous présents dans la liste des aéroports du chemin pour chacun d'entre eux
             return [path for path in all_paths if via_airports_codes.issubset(set(path.airports()))]
-
         except Exception as e:
             raise e
