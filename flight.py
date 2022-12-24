@@ -1,16 +1,24 @@
 class Flight:
     def __init__(self, src_code: str = None, dst_code: str = None, duration: float = None):
         """
-        Flight class characterized by the following attributes:
+        Flight class constructor representing a flight and characterized by the following optional attributes:
 
         Args:
-            src_code (str): The code of the source airport
-            dst_code (str): The code of the destination airport
-            duration (float): The duration of the flight
+            src_code (str): Source airport code
+            dst_code (str): Destination airport code
+            duration (float): Flight duration
         """
         self.src_code = src_code
         self.dst_code = dst_code
         self.duration = duration
 
     def __str__(self) -> str:
-        return f"Source : {self.src_code}, Destination : {self.dst_code}, Durée : {self.duration}"
+        """
+        Allowing to format the object as a string.
+
+        Returns:
+            str: Formatted object with the correct hours-minutes display
+        """
+        hours, minutes = divmod(int(self.duration * 60), 60)
+        
+        return f"Vol de {self.src_code} à destination de {self.dst_code} - {hours}h et {minutes}min de vol\n___________\n\n"
