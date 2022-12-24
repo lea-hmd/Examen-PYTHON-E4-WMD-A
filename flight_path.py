@@ -45,3 +45,21 @@ class FlightPath:
                     f"Cannot add flight {via_flight} to path starting at {self.path}: the source airport code does not match the destination airport code of the last flight in the path.")
             self.path.append(dst_airport)
             self.flights_list.append(via_flight)
+
+    def flights(self) -> list[Flight]:
+        """
+        Returns the list of flights in the path.
+
+        Returns:
+            list[Flight]: List of flights in the path
+        """
+        return self.flights_list
+
+    def airports(self) -> list[Airport]:
+        """
+        Returns the list of airports in the path.
+
+        Returns:
+            list[Airport]: List of airports in the path
+        """
+        return [self.path] + [flight.dst_airport for flight in self.flights_list]
