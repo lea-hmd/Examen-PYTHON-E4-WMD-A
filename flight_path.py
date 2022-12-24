@@ -63,3 +63,21 @@ class FlightPath:
             list[Airport]: List of airports in the path
         """
         return [self.path] + [flight.dst_airport for flight in self.flights_list]
+
+    def steps(self) -> int:
+        """
+        Returns the number of steps in the path.
+
+        Returns:
+            int: Number of steps in the path
+        """
+        return len(self.flights_list)
+
+    def duration(self) -> float:
+        """
+        Returns the total duration of the path.
+
+        Returns:
+            float: Total duration of the path
+        """
+        return sum(flight.duration for flight in self.flights_list)
