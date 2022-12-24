@@ -46,6 +46,7 @@ class FlightMap:
                     dst_code = row['dst_code']
                     duration = float(row['duration'])
                     self.flights_dict[src_code, dst_code] = duration
+                    self.flights_dict[dst_code, src_code] = duration
 
     def airports(self) -> list[Airport]:
         """
@@ -68,7 +69,7 @@ class FlightMap:
         """
         for flight in self.flights_dict.values():
             print(flight)
-            
+
         return list(self.flights_dict.values())
 
     def airport_find(self, airport_code: str) -> Airport:
