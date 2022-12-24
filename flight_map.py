@@ -204,3 +204,24 @@ def paths_shortest_length(self, src_airport_code: str, dst_airport_code: str) ->
 
     # On filtre la liste des chemins pour garder que ceux qui ont le même nombre d'étapes que le premier en utilisant une list comprehension
     return [path for path in all_paths if path.steps() == shortest_length]
+
+
+def paths_shortest_duration(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
+    """
+    Finds the shortest paths duration between the src_airport_code and dst_airport_code airports.
+
+    Args:
+        src_airport_code (str): Source airport code
+        dst_airport_code (str): Destination airport code
+
+    Returns:
+        list[FlightPath]: List of FlightPath
+    """
+
+    all_paths = self.paths(src_airport_code, dst_airport_code)
+
+    all_paths.sort(key=lambda path: path.duration())
+
+    shortest_duration = all_paths[0].duration()
+
+    return [path for path in all_paths if path.duration() == shortest_duration]
