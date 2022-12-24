@@ -113,3 +113,19 @@ class FlightMap:
             for (src_code, dst_code), duration in self.flights_dict.items()
             if src_code == airport_code
         ]
+
+    def airports_from(self, airport_code: str) -> list[Airport]:
+        """
+        Returns the list of destination airports for flights departing from the airport with the given code.
+
+        Args:
+            airport_code (str): The code of the airport
+
+        Returns:
+            List[Airport]: The list of destination airports
+        """
+        return [
+            self.airport_find(dst_code)
+            for (src_code, dst_code), duration in self.flights_dict.items()
+            if src_code == airport_code
+        ]
