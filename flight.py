@@ -20,5 +20,5 @@ class Flight:
             str: Formatted object with the correct hours-minutes display
         """
         hours, minutes = divmod(int(self.duration * 60), 60)
-        
+
         return f"Vol de {self.src_code} à destination de {self.dst_code} - {hours}h et {minutes}min de vol\n___________\n\n"
