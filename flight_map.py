@@ -225,3 +225,23 @@ def paths_shortest_duration(self, src_airport_code: str, dst_airport_code: str) 
     shortest_duration = all_paths[0].duration()
 
     return [path for path in all_paths if path.duration() == shortest_duration]
+
+
+def paths_via(self, src_airport_code: str, dst_airport_code: str, via_airport_code: str) -> list[FlightPath]:
+    """
+    Finds all the paths between the src_airport_code and dst_airport_code airports via the via_airport_code airport.
+
+    Args:
+        src_airport_code (str): Source airport code
+        dst_airport_code (str): Destination airport code
+        via_airport_code (str): Via airport code
+
+    Returns:
+        list[FlightPath]: List of FlightPath
+    """
+    stopover_paths = []
+
+    for path_to_via in self.paths(src_airport_code, via_airport_code):
+        for path_from_via in self.paths(via_airport_code, dst_airport_code):
+            stopover_paths.append(path_to_via + path_from_via)
+    return stopover_paths
