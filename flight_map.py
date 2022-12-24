@@ -131,136 +131,131 @@ class FlightMap:
             if src_code == airport_code
         ]
 
+    def paths(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
+        """
+        Finds all the paths between the src_airport_code and dst_airport_code airports.
 
-def paths(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
-    """
-    Finds all the paths between the src_airport_code and dst_airport_code airports.
+        Args:
+            src_airport_code (str): Source airport code
+            dst_airport_code (str): Destination airport code
 
-    Args:
-        src_airport_code (str): Source airport code
-        dst_airport_code (str): Destination airport code
+        Returns:
+            list[FlightPath]: List of FlightPath
+        """
+        # On cherche l'aéroport à l'aide de notre fonction airport_find
+        src_airport = self.airport_find(src_airport_code)
 
-    Returns:
-        list[FlightPath]: List of FlightPath
-    """
-    # On cherche l'aéroport à l'aide de notre fonction airport_find
-    src_airport = self.airport_find(src_airport_code)
+        airports_not_visited = set(self.airports_dict.values())
+        airports_future = {src_airport}
+        airports_visited = set()
 
-    airports_not_visited = set(self.airports_dict.values())
-    airports_future = {src_airport}
-    airports_visited = set()
+        # Liste des chemins trouvés
+        paths_found = []
 
-    # Liste des chemins trouvés
-    paths_found = []
+        # Boucle itérant tant qu'il y a un prochain aéroport
+        while airports_future:
+            # On récupère le prochain aéroport à visiter
+            airport = airports_future.pop()
 
-    # Boucle itérant tant qu'il y a un prochain aéroport
-    while airports_future:
-        # On récupère le prochain aéroport à visiter
-        airport = airports_future.pop()
+            # On ajoute l'aéroport à la liste des aéroports visités
+            airports_visited.add(airport)
+            airports_not_visited.remove(airport)
 
-        # On ajoute l'aéroport à la liste des aéroports visités
-        airports_visited.add(airport)
-        airports_not_visited.remove(airport)
-
-        # Si l'aéroport est la dernière destination on ajoute le chemin à la liste des chemins trouvés sinon on continue
-        if airport.code == dst_airport_code:
-            paths_found.append(airport.path)
-            continue
-
-        # On récupère les aéroports accessibles à partir de l'aéroport actuel à l'aide de notre fonction airports_from
-        next_airports = self.airports_from(airport.code)
-        for next_airport in next_airports:
-            # Si l'aéroport a déjà été visité, on passe au suivant
-            if next_airport in airports_visited:
+            # Si l'aéroport est la dernière destination on ajoute le chemin à la liste des chemins trouvés sinon on continue
+            if airport.code == dst_airport_code:
+                paths_found.append(airport.path)
                 continue
-            # Sinon on ajoute le vol à la prochaine destination en vérifiant qu'il existe bien à l'aide de notre fonction flight_exist et on ajoute l'aéroport aux aéroports à visiter
-            flight = self.flight_exist(airport.code, next_airport.code)
-            next_airport.path.add(next_airport, flight)
-            airports_future.add(next_airport)
 
-    return paths_found
+            # On récupère les aéroports accessibles à partir de l'aéroport actuel à l'aide de notre fonction airports_from
+            next_airports = self.airports_from(airport.code)
+            for next_airport in next_airports:
+                # Si l'aéroport a déjà été visité, on passe au suivant
+                if next_airport in airports_visited:
+                    continue
+                # Sinon on ajoute le vol à la prochaine destination en vérifiant qu'il existe bien à l'aide de notre fonction flight_exist et on ajoute l'aéroport aux aéroports à visiter
+                flight = self.flight_exist(airport.code, next_airport.code)
+                next_airport.path.add(next_airport, flight)
+                airports_future.add(next_airport)
 
+        return paths_found
 
-def paths_shortest_length(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
-    """
-    Finds the shortest paths steps between the src_airport_code and dst_airport_code airports.
+    def paths_shortest_length(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
+        """
+        Finds the shortest paths steps between the src_airport_code and dst_airport_code airports.
 
-    Args:
-        src_airport_code (str): Source airport code
-        dst_airport_code (str): Destination airport code
+        Args:
+            src_airport_code (str): Source airport code
+            dst_airport_code (str): Destination airport code
 
-    Returns:
-        list[FlightPath]: List of FlightPath
-    """
+        Returns:
+            list[FlightPath]: List of FlightPath
+        """
 
-    # On récupère tous les chemins possibles entre les deux aéroports
-    all_paths = self.paths(src_airport_code, dst_airport_code)
+        # On récupère tous les chemins possibles entre les deux aéroports
+        all_paths = self.paths(src_airport_code, dst_airport_code)
 
-    # On trie les chemins par nombre d'étapes en utilisant la fonction steps
-    all_paths.sort(key=lambda path: path.steps())
+        # On trie les chemins par nombre d'étapes en utilisant la fonction steps
+        all_paths.sort(key=lambda path: path.steps())
 
-    # On récupère le nombre d'étapes du premier chemin (celui avec le moins d'étapes)
-    shortest_length = all_paths[0].steps()
+        # On récupère le nombre d'étapes du premier chemin (celui avec le moins d'étapes)
+        shortest_length = all_paths[0].steps()
 
-    # On filtre la liste des chemins pour garder que ceux qui ont le même nombre d'étapes que le premier en utilisant une list comprehension
-    return [path for path in all_paths if path.steps() == shortest_length]
+        # On filtre la liste des chemins pour garder que ceux qui ont le même nombre d'étapes que le premier en utilisant une list comprehension
+        return [path for path in all_paths if path.steps() == shortest_length]
 
+    def paths_shortest_duration(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
+        """
+        Finds the shortest paths duration between the src_airport_code and dst_airport_code airports.
 
-def paths_shortest_duration(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
-    """
-    Finds the shortest paths duration between the src_airport_code and dst_airport_code airports.
+        Args:
+            src_airport_code (str): Source airport code
+            dst_airport_code (str): Destination airport code
 
-    Args:
-        src_airport_code (str): Source airport code
-        dst_airport_code (str): Destination airport code
+        Returns:
+            list[FlightPath]: List of FlightPath
+        """
 
-    Returns:
-        list[FlightPath]: List of FlightPath
-    """
+        all_paths = self.paths(src_airport_code, dst_airport_code)
 
-    all_paths = self.paths(src_airport_code, dst_airport_code)
+        all_paths.sort(key=lambda path: path.duration())
 
-    all_paths.sort(key=lambda path: path.duration())
+        shortest_duration = all_paths[0].duration()
 
-    shortest_duration = all_paths[0].duration()
+        return [path for path in all_paths if path.duration() == shortest_duration]
 
-    return [path for path in all_paths if path.duration() == shortest_duration]
+    def paths_via(self, src_airport_code: str, dst_airport_code: str, via_airport_code: str) -> list[FlightPath]:
+        """
+        Finds all the paths between the src_airport_code and dst_airport_code airports via the via_airport_code airport.
 
+        Args:
+            src_airport_code (str): Source airport code
+            dst_airport_code (str): Destination airport code
+            via_airport_code (str): Via airport code
 
-def paths_via(self, src_airport_code: str, dst_airport_code: str, via_airport_code: str) -> list[FlightPath]:
-    """
-    Finds all the paths between the src_airport_code and dst_airport_code airports via the via_airport_code airport.
+        Returns:
+            list[FlightPath]: List of FlightPath
+        """
+        stopover_paths = []
 
-    Args:
-        src_airport_code (str): Source airport code
-        dst_airport_code (str): Destination airport code
-        via_airport_code (str): Via airport code
+        for path_to_via in self.paths(src_airport_code, via_airport_code):
+            for path_from_via in self.paths(via_airport_code, dst_airport_code):
+                stopover_paths.append(path_to_via + path_from_via)
+        return stopover_paths
 
-    Returns:
-        list[FlightPath]: List of FlightPath
-    """
-    stopover_paths = []
+    def paths_via_multi(self, src_airport_code: str, dst_airport_code: str, via_airports_codes: set[str]) -> list[FlightPath]:
+        """
+        Finds all the paths between the src_airport_code and dst_airport_code airports via the via_airports_codes airports.
 
-    for path_to_via in self.paths(src_airport_code, via_airport_code):
-        for path_from_via in self.paths(via_airport_code, dst_airport_code):
-            stopover_paths.append(path_to_via + path_from_via)
-    return stopover_paths
+        Args:
+            src_airport_code (str): Source airport code
+            dst_airport_code (str): Destination airport code
+            via_airports_codes (set[str]): Via airports codes
 
+        Returns:
+            list[FlightPath]: List of FlightPath
+        """
+        # On chercher tous les chemins possibles allant de src_airport_code à dst_airport_code en utilisant la précédente fonction paths
+        all_paths = self.paths(src_airport_code, dst_airport_code)
 
-def paths_via_multi(self, src_airport_code: str, dst_airport_code: str, via_airports_codes: set[str]) -> list[FlightPath]:
-    """
-    Finds all the paths between the src_airport_code and dst_airport_code airports via the via_airports_codes airports.
-
-    Args:
-        src_airport_code (str): Source airport code
-        dst_airport_code (str): Destination airport code
-        via_airports_codes (set[str]): Via airports codes
-
-    Returns:
-        list[FlightPath]: List of FlightPath
-    """
-    # On chercher tous les chemins possibles allant de src_airport_code à dst_airport_code en utilisant la précédente fonction paths
-    all_paths = self.paths(src_airport_code, dst_airport_code)
-
-    # On garde uniquement ceux qui passent par tous les aéroports de via_airports_codes ensuite on vérifie que les aéroports de via_airports_codes sont tous présents dans la liste des aéroports du chemin pour chacun d'entre eux
-    return [path for path in all_paths if via_airports_codes.issubset(set(path.airports()))]
+        # On garde uniquement ceux qui passent par tous les aéroports de via_airports_codes ensuite on vérifie que les aéroports de via_airports_codes sont tous présents dans la liste des aéroports du chemin pour chacun d'entre eux
+        return [path for path in all_paths if via_airports_codes.issubset(set(path.airports()))]
