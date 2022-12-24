@@ -1,6 +1,7 @@
 import csv
 from airport import Airport
 from flight import Flight
+from flight_path import FlightPath
 
 
 class FlightMap:
@@ -129,3 +130,52 @@ class FlightMap:
             for (src_code, dst_code), duration in self.flights_dict.items()
             if src_code == airport_code
         ]
+
+
+def paths(self, src_airport_code: str, dst_airport_code: str) -> list[FlightPath]:
+    """
+    Finds all the paths between the src_airport_code and dst_airport_code airports.
+
+    Args:
+        src_airport_code (str): Source airport code
+        dst_airport_code (str): Destination airport code
+
+    Returns:
+        list[FlightPath]: List of FlightPath
+    """
+    # On cherche l'aéroport à l'aide de notre fonction airport_find
+    src_airport = self.airport_find(src_airport_code)
+
+    airports_not_visited = set(self.airports_dict.values())
+    airports_future = {src_airport}
+    airports_visited = set()
+
+    # Liste des chemins trouvés
+    paths_found = []
+
+    # Boucle itérant tant qu'il y a un prochain aéroport
+    while airports_future:
+        # On récupère le prochain aéroport à visiter
+        airport = airports_future.pop()
+
+        # On ajoute l'aéroport à la liste des aéroports visités
+        airports_visited.add(airport)
+        airports_not_visited.remove(airport)
+
+        # Si l'aéroport est la dernière destination on ajoute le chemin à la liste des chemins trouvés sinon on continue
+        if airport.code == dst_airport_code:
+            paths_found.append(airport.path)
+            continue
+
+        # On récupère les aéroports accessibles à partir de l'aéroport actuel à l'aide de notre fonction airports_from
+        next_airports = self.airports_from(airport.code)
+        for next_airport in next_airports:
+            # Si l'aéroport a déjà été visité, on passe au suivant
+            if next_airport in airports_visited:
+                continue
+            # Sinon on ajoute le vol à la prochaine destination en vérifiant qu'il existe bien à l'aide de notre fonction flight_exist et on ajoute l'aéroport aux aéroports à visiter
+            flight = self.flight_exist(airport.code, next_airport.code)
+            next_airport.path.add(next_airport, flight)
+            airports_future.add(next_airport)
+
+    return paths_found
